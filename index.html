@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบรับสมัครนักเรียนออนไลน์ (ม.1 และ ม.4) - โรงเรียนกุศลวิทยา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        },
+                        edu: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Prompt', 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #printableExamCard, #printableExamCard * { visibility: visible; }
+            #printableExamCard { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-edu-500 selection:text-white">
+
+    <!-- HEADER & NAVBAR -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- LOGO & BRAND -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-12 h-12 bg-edu-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-md shadow-edu-200">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900 tracking-tight leading-tight">โรงเรียนกุศลวิทยา</h1>
+                        <div class="flex items-center space-x-1.5 text-xs text-slate-500">
+                            <span>ระบบรับสมัคร ม.1 / ม.4</span>
+                            <span class="font-medium text-slate-400">|</span>
+                            <span class="font-semibold text-slate-600">ปีการศึกษา:</span>
+                            <span id="globalActiveYearDisplay" class="bg-edu-50 border border-edu-200 font-bold text-edu-700 text-xs rounded-lg px-2.5 py-0.5">2569</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NAVIGATION TABS -->
+                <nav class="hidden md:flex space-x-1 bg-slate-100 p-1.5 rounded-2xl">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all text-white bg-edu-600 shadow">
+                        <i class="fa-solid fa-house mr-1.5"></i> หน้าแรก
+                    </button>
+                    <button onclick="switchTab('apply')" id="nav-apply" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-600 hover:text-slate-900">
+                        <i class="fa-solid fa-file-pen mr-1.5"></i> ยื่นใบสมัคร (ม.1/ม.4)
+                    </button>
+                    <button onclick="switchTab('status')" id="nav-status" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-600 hover:text-slate-900">
+                        <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i> เช็กสถานะ/บัตรสอบ
+                    </button>
+                    <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-600 hover:text-slate-900">
+                        <i class="fa-solid fa-user-shield mr-1.5"></i> สำหรับเจ้าหน้าที่
+                    </button>
+                </nav>
+
+                <!-- CALL TO ACTION -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <button onclick="switchTab('apply')" class="bg-edu-600 hover:bg-edu-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm shadow-md shadow-edu-100 transition-all flex items-center space-x-2">
+                        <span>สมัครเรียน ม.1 / ม.4</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- MOBILE MENU BUTTON -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOBILE MENU DROPDOWN -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2">
+            <button onclick="switchTab('home'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <i class="fa-solid fa-house mr-2 text-edu-600"></i> หน้าแรก
+            </button>
+            <button onclick="switchTab('apply'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <i class="fa-solid fa-file-pen mr-2 text-edu-600"></i> ยื่นใบสมัคร ม.1 / ม.4
+            </button>
+            <button onclick="switchTab('status'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <i class="fa-solid fa-magnifying-glass-chart mr-2 text-edu-600"></i> ตรวจสอบสถานะ/พิมพ์บัตรสอบ
+            </button>
+            <button onclick="switchTab('admin'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <i class="fa-solid fa-user-shield mr-2 text-edu-600"></i> สำหรับเจ้าหน้าที่
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINERS -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: HOME PAGE -->
+        <section id="tab-home-content" class="space-y-10">
+            <!-- HERO BANNER -->
+            <div class="relative rounded-3xl bg-gradient-to-r from-edu-700 via-edu-600 to-indigo-700 text-white overflow-hidden shadow-xl p-8 sm:p-12">
+                <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-2xl space-y-6">
+                    <span class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-medium text-white">
+                        <i class="fa-solid fa-bullhorn text-amber-300"></i> <span id="heroYearBadgeText">เปิดรับสมัครนักเรียนชั้น ม.1 และ ม.4 ปีการศึกษา 2569</span>
+                    </span>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        เปิดรับสมัครนักเรียน <br><span class="text-sky-200">ระดับชั้น ม.1 และ ม.4</span>
+                    </h2>
+                    <p class="text-sky-100 text-sm sm:text-base leading-relaxed">
+                        โรงเรียนกุศลวิทยามุ่งมั่นส่งเสริมความเป็นเลิศทางวิชาการและเทคโนโลยี พัฒนาผู้เรียนตามศักยภาพ สมัครเข้าศึกษาต่อในระดับมัธยมศึกษาปีที่ 1 และ 4 ได้แล้ววันนี้ผ่านระบบออนไลน์
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="switchTab('apply')" class="bg-white text-edu-700 hover:bg-sky-50 font-semibold px-6 py-3 rounded-2xl shadow-lg transition-all text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>กรอกใบสมัครออนไลน์ (ม.1 / ม.4)</span>
+                        </button>
+                        <button onclick="switchTab('status')" class="bg-edu-800/60 hover:bg-edu-800 text-white font-medium px-6 py-3 rounded-2xl border border-white/20 transition-all text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-id-card"></i>
+                            <span>เช็กสถานะ/พิมพ์บัตรสอบ</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEWS & ANNOUNCEMENTS SECTION -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-bullhorn text-edu-600 mr-2.5"></i>ข่าวสาร & ประกาศสำคัญ
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">ประกาศล่าสุดเกี่ยวกับการรับสมัคร สถานที่สอบ และกำหนดการเรียน</p>
+                    </div>
+                </div>
+
+                <div id="homeNewsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Dynamic news items injected here -->
+                </div>
+            </div>
+
+            <!-- ADMISSION STATS & LEVELS -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900">ระดับชั้นที่เปิดรับสมัคร</h3>
+                        <p class="text-xs text-slate-500" id="homeSectionYearDesc">ปีการศึกษา 2569 โรงเรียนกุศลวิทยา เปิดรับเฉพาะระดับชั้น ม.1 และ ม.4</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- LEVEL CARD 1: ม.1 -->
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all space-y-5">
+                        <div class="flex justify-between items-start">
+                            <div class="w-14 h-14 bg-edu-100 text-edu-600 rounded-2xl flex items-center justify-center text-2xl font-bold">
+                                <i class="fa-solid fa-user-graduate"></i>
+                            </div>
+                            <span class="bg-edu-50 text-edu-700 border border-edu-200 text-xs font-semibold px-3 py-1 rounded-full">
+                                รับจำนวน 160 คน
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-xl">มัธยมศึกษาปีที่ 1 (ม.1)</h4>
+                            <p class="text-xs text-slate-500 mt-1">รับผู้สำเร็จการศึกษาชั้นประถมศึกษาปีที่ 6 (ป.6) หรือเทียบเท่า</p>
+                        </div>
+                        
+                        <div class="space-y-2 text-xs">
+                            <p class="font-semibold text-slate-700">โครงการ/แผนการเรียนที่เปิดรับ:</p>
+                            <ul id="homeM1TrackList" class="space-y-1.5 text-slate-600">
+                                <!-- DYNAMIC M1 TRACKS -->
+                            </ul>
+                        </div>
+
+                        <button onclick="selectLevelAndApply('มัธยมศึกษาปีที่ 1')" class="w-full bg-slate-100 hover:bg-edu-600 hover:text-white text-slate-700 font-medium py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2">
+                            <span>สมัครเข้าเรียน ม.1</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- LEVEL CARD 2: ม.4 -->
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all space-y-5">
+                        <div class="flex justify-between items-start">
+                            <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-2xl font-bold">
+                                <i class="fa-solid fa-atom"></i>
+                            </div>
+                            <span class="bg-purple-50 text-purple-700 border border-purple-200 text-xs font-semibold px-3 py-1 rounded-full">
+                                รับจำนวน 150 คน
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-xl">มัธยมศึกษาปีที่ 4 (ม.4)</h4>
+                            <p class="text-xs text-slate-500 mt-1">รับผู้สำเร็จการศึกษาชั้นมัธยมศึกษาปีที่ 3 (ม.3) หรือเทียบเท่า</p>
+                        </div>
+                        
+                        <div class="space-y-2 text-xs">
+                            <p class="font-semibold text-slate-700">แผนการเรียนที่เปิดรับ:</p>
+                            <ul id="homeM4TrackList" class="space-y-1.5 text-slate-600">
+                                <!-- DYNAMIC M4 TRACKS -->
+                            </ul>
+                        </div>
+
+                        <button onclick="selectLevelAndApply('มัธยมศึกษาปีที่ 4')" class="w-full bg-slate-100 hover:bg-purple-600 hover:text-white text-slate-700 font-medium py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2">
+                            <span>สมัครเข้าเรียน ม.4</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: ONLINE APPLICATION FORM -->
+        <section id="tab-apply-content" class="hidden max-w-4xl mx-auto space-y-8">
+            <div class="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
+                <!-- FORM TITLE -->
+                <div class="text-center mb-8">
+                    <span class="bg-edu-100 text-edu-700 text-xs font-bold px-3 py-1 rounded-full">แบบฟอร์มสมัคร ม.1 / ม.4</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">ใบสมัครเข้าเรียน ชั้นมัธยมศึกษาปีที่ 1 และ 4</h2>
+                    <p class="text-xs text-slate-500 mt-1">กรุณากรอกข้อมูลผู้สมัครให้ถูกต้องและครบถ้วนตามเอกสารทางราชการ</p>
+                </div>
+
+                <!-- STEP INDICATOR -->
+                <div class="mb-10">
+                    <div class="flex items-center justify-between max-w-xl mx-auto">
+                        <div class="flex flex-col items-center">
+                            <div id="step-indicator-1" class="w-10 h-10 rounded-2xl bg-edu-600 text-white font-bold flex items-center justify-center text-sm shadow">1</div>
+                            <span class="text-[11px] font-medium text-slate-600 mt-1">ระดับชั้น/แผนการเรียน</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-slate-200 mx-2" id="line-step-1"></div>
+                        <div class="flex flex-col items-center">
+                            <div id="step-indicator-2" class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center text-sm">2</div>
+                            <span class="text-[11px] font-medium text-slate-600 mt-1">ข้อมูลนักเรียน</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-slate-200 mx-2" id="line-step-2"></div>
+                        <div class="flex flex-col items-center">
+                            <div id="step-indicator-3" class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center text-sm">3</div>
+                            <span class="text-[11px] font-medium text-slate-600 mt-1">ข้อมูลผู้ปกครอง</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-slate-200 mx-2" id="line-step-3"></div>
+                        <div class="flex flex-col items-center">
+                            <div id="step-indicator-4" class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center text-sm">4</div>
+                            <span class="text-[11px] font-medium text-slate-600 mt-1">หลักฐานเอกสาร</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APPLICATION FORM CONTAINER -->
+                <form id="applicationForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                    
+                    <!-- STEP 1: SELECT LEVEL & TRACK -->
+                    <div id="form-step-1" class="space-y-6">
+                        <h3 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">1. เลือกระดับชั้นและแผนการเรียนที่ต้องการสมัคร</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ปีการศึกษา</label>
+                                <div class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-100 font-bold text-edu-700 text-sm flex items-center justify-between">
+                                    <span id="applyYearText">2569</span>
+                                    <span class="text-[10px] text-slate-500 font-normal">(กำหนดโดยโรงเรียน)</span>
+                                </div>
+                                <input type="hidden" id="applyYear" value="2569">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ระดับชั้นที่ต้องการสมัคร <span class="text-rose-500">*</span></label>
+                                <select id="applyLevel" required onchange="handleLevelChange(this.value)" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                                    <option value="">-- กรุณาเลือกระดับชั้น --</option>
+                                    <option value="มัธยมศึกษาปีที่ 1">มัธยมศึกษาปีที่ 1 (ม.1)</option>
+                                    <option value="มัธยมศึกษาปีที่ 4">มัธยมศึกษาปีที่ 4 (ม.4)</option>
+                                </select>
+                            </div>
+
+                            <div id="trackContainer">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">แผนการเรียน / โครงการห้องเรียน <span class="text-rose-500">*</span></label>
+                                <select id="applyTrack" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                                    <option value="">-- กรุณาเลือกระดับชั้นก่อน --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <button type="button" onclick="validateStep1AndNext()" class="bg-edu-600 hover:bg-edu-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm transition-all flex items-center space-x-2">
+                                <span>ถัดไป: ข้อมูลนักเรียน</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: STUDENT INFO -->
+                    <div id="form-step-2" class="hidden space-y-6">
+                        <h3 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">2. ข้อมูลส่วนตัวนักเรียน</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">คำนำหน้า <span class="text-rose-500">*</span></label>
+                                <select id="studentPrefix" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                                    <option value="เด็กชาย">เด็กชาย</option>
+                                    <option value="เด็กหญิง">เด็กหญิง</option>
+                                    <option value="นาย">นาย</option>
+                                    <option value="นางสาว">นางสาว</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
+                                <input type="text" id="studentFirstName" required placeholder="เช่น กุศล" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
+                                <input type="text" id="studentLastName" required placeholder="เช่น รักษ์เรียน" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">เลขประจำตัวประชาชน (13 หลัก) <span class="text-rose-500">*</span></label>
+                                <input type="text" id="studentIdCard" maxlength="13" required placeholder="เช่น 1100200300400" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">วัน/เดือน/ปีเกิด <span class="text-rose-500">*</span></label>
+                                <input type="date" id="studentDob" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">โรงเรียนเดิม (จบชั้น ป.6 หรือ ม.3)</label>
+                            <input type="text" id="studentOldSchool" placeholder="เช่น โรงเรียนอนุบาลเทศบาล หรือ โรงเรียนกุศลวิทยา" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                        </div>
+
+                        <div class="flex justify-between pt-4">
+                            <button type="button" onclick="nextStep(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-6 py-2.5 rounded-xl text-sm transition-all">ย้อนกลับ</button>
+                            <button type="button" onclick="nextStep(3)" class="bg-edu-600 hover:bg-edu-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm transition-all flex items-center space-x-2">
+                                <span>ถัดไป: ข้อมูลผู้ปกครอง</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: PARENT INFO -->
+                    <div id="form-step-3" class="hidden space-y-6">
+                        <h3 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">3. ข้อมูลผู้ปกครองและการติดต่อ</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล ผู้ปกครอง <span class="text-rose-500">*</span></label>
+                                <input type="text" id="parentName" required placeholder="นายสมชาย รักษ์เรียน" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">ความสัมพันธ์ <span class="text-rose-500">*</span></label>
+                                <select id="parentRel" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                                    <option value="บิดา">บิดา</option>
+                                    <option value="มารดา">มารดา</option>
+                                    <option value="ผู้ปกครอง">ผู้ปกครอง / ญาติ</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อสะดวก <span class="text-rose-500">*</span></label>
+                                <input type="tel" id="parentPhone" required placeholder="0812345678" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">อีเมลผู้ปกครอง/นักเรียน (ถ้ามี)</label>
+                                <input type="email" id="parentEmail" placeholder="parent@example.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 focus:border-edu-500 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between pt-4">
+                            <button type="button" onclick="nextStep(2)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-6 py-2.5 rounded-xl text-sm transition-all">ย้อนกลับ</button>
+                            <button type="button" onclick="nextStep(4)" class="bg-edu-600 hover:bg-edu-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm transition-all flex items-center space-x-2">
+                                <span>ถัดไป: อัปโหลดเอกสาร</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: UPLOAD & SUBMIT -->
+                    <div id="form-step-4" class="hidden space-y-6">
+                        <h3 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">4. อัปโหลดเอกสารประกอบการสมัคร</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 border border-dashed border-slate-300 rounded-2xl bg-slate-50 text-center space-y-2">
+                                <i class="fa-solid fa-file-arrow-up text-2xl text-edu-600"></i>
+                                <p class="text-xs font-semibold text-slate-700">รูปถ่ายนักเรียน ชุดนักเรียน (.jpg, .png)</p>
+                                <input type="file" id="filePhoto" accept="image/*" class="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-edu-100 file:text-edu-700 hover:file:bg-edu-200">
+                            </div>
+
+                            <div class="p-4 border border-dashed border-slate-300 rounded-2xl bg-slate-50 text-center space-y-2">
+                                <i class="fa-solid fa-file-invoice text-2xl text-edu-600"></i>
+                                <p class="text-xs font-semibold text-slate-700">สำเนา ปพ.1 หรือหนังสือรับรองผลการเรียน <span class="text-rose-500">*</span></p>
+                                <input type="file" id="fileDoc" accept=".pdf,image/*" required class="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-edu-100 file:text-edu-700 hover:file:bg-edu-200">
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800 space-y-1">
+                            <p class="font-bold"><i class="fa-solid fa-circle-info mr-1"></i> คำยืนยันการสมัครเรียน ม.1 / ม.4</p>
+                            <p>ข้าพเจ้าขอรับรองว่าข้อมูลและหลักฐานข้างต้นทั้งหมดถูกต้องและเป็นความจริงทุกประการ หากตรวจพบว่าไม่ตรงตามเงื่อนไข ทางโรงเรียนขอสงวนสิทธิ์ในการยกเลิกผลการคัดเลือก</p>
+                        </div>
+
+                        <div class="flex justify-between pt-4">
+                            <button type="button" onclick="nextStep(3)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-6 py-2.5 rounded-xl text-sm transition-all">ย้อนกลับ</button>
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3 rounded-xl text-sm shadow-lg shadow-emerald-100 transition-all flex items-center space-x-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>ยืนยันและส่งใบสมัคร</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- TAB 3: CHECK STATUS & PRINT CARD -->
+        <section id="tab-status-content" class="hidden max-w-4xl mx-auto space-y-8">
+            <!-- SEARCH FORM CARD -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm text-center space-y-4">
+                <div class="w-12 h-12 bg-edu-100 text-edu-600 rounded-2xl flex items-center justify-center text-xl mx-auto">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">ตรวจสอบสถานะและพิมพ์บัตรประจำตัวสอบ (ม.1 / ม.4)</h2>
+                    <p class="text-xs text-slate-500 mt-1">กรอกเลขประจำตัวประชาชน 13 หลัก หรือเลขที่ใบสมัครของผู้สมัครเพื่อค้นหาข้อมูล</p>
+                </div>
+
+                <form onsubmit="event.preventDefault(); searchApplicantStatus();" class="max-w-md mx-auto flex gap-2 pt-2">
+                    <input type="text" id="searchIdCard" placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก" maxlength="13" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 text-sm">
+                    <button type="submit" class="bg-edu-600 hover:bg-edu-700 text-white px-5 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center space-x-1.5">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>ค้นหา</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- INITIAL INSTRUCTION -->
+            <div id="statusInitialNotice" class="bg-slate-100/80 border border-slate-200 rounded-3xl p-8 text-center space-y-3">
+                <div class="w-12 h-12 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto text-lg">
+                    <i class="fa-solid fa-search"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-700">กรอกเลขบัตรประชาชนเพื่อเช็กสถานะ</h3>
+                <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                    โปรดป้อนเลขประจำตัวประชาชน 13 หลักของคุณในช่องค้นหาด้านบน แล้วกดปุ่ม "ค้นหา" เพื่อตรวจสอบสถานะและพิมพ์บัตรประจำตัวสอบ
+                </p>
+            </div>
+
+            <!-- NOT FOUND DISPLAY AREA -->
+            <div id="searchNotFoundArea" class="hidden bg-rose-50 border border-rose-200 rounded-3xl p-8 text-center space-y-4">
+                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-rose-900">ไม่พบข้อมูลผู้สมัครในระบบ</h3>
+                    <p class="text-xs text-rose-700 mt-1 max-w-md mx-auto">
+                        โปรดตรวจสอบเลขประจำตัวประชาชน 13 หลักอีกครั้ง หากคุณยังไม่ได้ยื่นใบสมัคร สามารถลงทะเบียนสมัครเรียนออนไลน์ได้ในแท็บ "ยื่นใบสมัคร"
+                    </p>
+                </div>
+                <div>
+                    <button onclick="switchTab('apply')" class="inline-flex items-center space-x-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition-all">
+                        <i class="fa-solid fa-file-pen"></i>
+                        <span>ยื่นใบสมัครเรียนออนไลน์</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SEARCH RESULT DISPLAY AREA -->
+            <div id="searchResultArea" class="hidden space-y-6">
+                <!-- STATUS BADGE CARD -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span id="resStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                            รอตรวจสอบเอกสาร
+                        </span>
+                        <h3 id="resStudentName" class="text-xl font-bold text-slate-800 mt-2">-</h3>
+                        <p id="resStudentDetails" class="text-xs text-slate-500 mt-1">-</p>
+                        
+                        <!-- ADMIN NOTE FOR CANDIDATE -->
+                        <div id="resAdminNoteBox" class="hidden mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                            <p class="font-bold"><i class="fa-solid fa-comment-dots mr-1"></i> แจ้งเตือนจากเจ้าหน้าที่:</p>
+                            <p id="resAdminNoteText" class="mt-0.5 text-[11px]">-</p>
+                        </div>
+                    </div>
+
+                    <button onclick="window.print()" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-print"></i>
+                        <span>พิมพ์บัตรประจำตัวสอบ</span>
+                    </button>
+                </div>
+
+                <!-- PRINTABLE EXAM CARD TEMPLATE -->
+                <div id="printableExamCard" class="bg-white p-8 rounded-3xl border-2 border-slate-800 shadow-md max-w-2xl mx-auto space-y-6">
+                    <!-- CARD HEADER -->
+                    <div class="flex justify-between items-center border-b-2 border-slate-800 pb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-edu-700 text-white rounded-xl flex items-center justify-center text-2xl font-bold">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900">บัตรประจำตัวผู้มีสิทธิ์สอบคัดเลือก (ม.1 / ม.4)</h2>
+                                <p class="text-xs text-slate-600">โรงเรียนกุศลวิทยา ปีการศึกษา <span id="cardAcademicYear">2569</span></p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-500 block">เลขที่ใบสมัคร</span>
+                            <span id="cardAppNo" class="text-base font-extrabold text-edu-700">-</span>
+                        </div>
+                    </div>
+
+                    <!-- CARD BODY -->
+                    <div class="grid grid-cols-3 gap-6">
+                        <!-- PHOTO -->
+                        <div class="col-span-1 flex flex-col items-center justify-center border border-slate-300 rounded-2xl bg-slate-50 p-1 h-40 overflow-hidden relative">
+                            <img id="cardPhotoImg" src="" alt="รูปถ่ายนักเรียน" class="w-full h-full object-cover rounded-xl hidden">
+                            <div id="cardPhotoFallback" class="flex flex-col items-center justify-center text-center">
+                                <i class="fa-solid fa-user-graduate text-5xl text-slate-300 mb-2"></i>
+                                <span class="text-[10px] text-slate-400">ติดรูปถ่าย 1.5 นิ้ว</span>
+                            </div>
+                        </div>
+
+                        <!-- STUDENT DETAILS -->
+                        <div class="col-span-2 space-y-3 text-xs">
+                            <div>
+                                <span class="text-slate-500 block">ชื่อ-นามสกุล ผู้สมัคร:</span>
+                                <span id="cardName" class="font-bold text-sm text-slate-800">-</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500 block">เลขประจำตัวประชาชน:</span>
+                                <span id="cardIdCard" class="font-bold text-slate-800">-</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500 block">ระดับชั้น / แผนการเรียน:</span>
+                                <span id="cardLevel" class="font-bold text-slate-800">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXAM SCHEDULE DETAILS -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <span class="text-slate-500 block">วันและเวลาสอบ:</span>
+                            <span id="cardExamDate" class="font-bold text-slate-800">5 เมษายน 2569</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block">สถานที่สอบ / ห้องสอบ:</span>
+                            <span id="cardExamRoom" class="font-bold text-slate-800">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block">เลขที่นั่งสอบ:</span>
+                            <span id="cardExamSeat" class="font-bold text-edu-700 text-sm">-</span>
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <!-- CARD FOOTER -->
+                    <div class="text-[11px] text-slate-500 border-t border-slate-200 pt-3 flex justify-between items-center">
+                        <span>* โปรดนำบัตรนี้พร้อมบัตรประชาชนมาในวันสอบ</span>
+                        <span class="font-semibold text-slate-700">ฝ่ายวัดผลและรับสมัครนักเรียน</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: OFFICER / ADMIN PANEL -->
+        <section id="tab-admin-content" class="hidden space-y-8">
+            <!-- ADMIN LOGIN VIEW -->
+            <div id="admin-login-view" class="max-w-md mx-auto bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 my-12">
+                <div class="text-center space-y-2">
+                    <div class="w-14 h-14 bg-edu-100 text-edu-600 rounded-2xl flex items-center justify-center text-2xl mx-auto shadow-sm">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">เข้าสู่ระบบสำหรับเจ้าหน้าที่</h2>
+                    <p class="text-xs text-slate-500">กรุณาใส่รหัสผ่านเพื่อเข้าใช้งานระบบจัดการผู้สมัคร (รหัสผ่านคือ: <span class="font-bold text-slate-800">ppp123</span>)</p>
+                </div>
+
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">รหัสผ่านเข้าใช้งาน <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <input type="password" id="adminPasswordInput" required placeholder="กรอกรหัสผ่าน" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500 text-sm pl-10">
+                            <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                        </div>
+                        <p id="adminAuthError" class="text-xs text-rose-500 font-medium mt-1.5 hidden flex items-center">
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i> รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+                        </p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-edu-600 hover:bg-edu-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-md shadow-edu-100 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>เข้าสู่ระบบ</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ADMIN DASHBOARD VIEW -->
+            <div id="admin-dashboard-view" class="hidden space-y-8">
+                <!-- DASHBOARD HEADER -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center bg-white p-6 rounded-3xl border border-slate-200 shadow-sm gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base">แผงควบคุมเจ้าหน้าที่รับสมัคร</h3>
+                            <p class="text-xs text-slate-500">เข้าสู่ระบบแล้ว (สิทธิ์ผู้ดูแลระบบ)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- ADMIN ACTIVE ACADEMIC YEAR SETTING -->
+                    <div class="flex items-center space-x-2 bg-edu-50 border border-edu-200 px-3.5 py-2 rounded-2xl">
+                        <i class="fa-solid fa-calendar-days text-edu-600 text-xs"></i>
+                        <span class="text-xs font-semibold text-slate-700">ปีการศึกษาของระบบ:</span>
+                        <input type="text" id="adminActiveYearInput" maxlength="4" placeholder="2569" class="w-16 px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold text-edu-700 text-center focus:ring-2 focus:ring-edu-500">
+                        <button onclick="updateSystemAcademicYear()" class="bg-edu-600 hover:bg-edu-700 text-white text-xs font-semibold px-3 py-1 rounded-lg transition-all shadow-sm">
+                            บันทึก
+                        </button>
+                    </div>
+
+                    <!-- ADMIN NAV SUB TABS -->
+                    <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
+                        <button id="adminSubtabBtnApps" onclick="switchAdminSubtab('applicants')" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-white text-slate-800 shadow-sm transition-all">
+                            <i class="fa-solid fa-users mr-1"></i> ผู้สมัครเรียน
+                        </button>
+                        <button id="adminSubtabBtnTracks" onclick="switchAdminSubtab('tracks')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                            <i class="fa-solid fa-layer-group mr-1"></i> จัดการสายการเรียน
+                        </button>
+                        <button id="adminSubtabBtnNews" onclick="switchAdminSubtab('news')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                            <i class="fa-solid fa-newspaper mr-1"></i> ข่าวประชาสัมพันธ์
+                        </button>
+                        <button id="adminSubtabBtnExams" onclick="switchAdminSubtab('exams')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                            <i class="fa-solid fa-map-location-dot mr-1"></i> สถานที่สอบ & กำหนดการ
+                        </button>
+                    </div>
+
+                    <button onclick="adminLogout()" class="bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-medium px-4 py-2 rounded-xl text-xs transition-all flex items-center space-x-1.5">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>ออกจากระบบ</span>
+                    </button>
+                </div>
+
+                <!-- SUBSECTION 1: APPLICANTS MANAGEMENT -->
+                <div id="admin-subtab-applicants" class="space-y-8">
+                    <!-- METRICS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">ผู้สมัครทั้งหมด</p>
+                                <h4 id="statTotal" class="text-2xl font-bold text-slate-900 mt-1">0</h4>
+                            </div>
+                            <div class="w-12 h-12 bg-edu-50 text-edu-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">รอตรวจสอบเอกสาร</p>
+                                <h4 id="statPending" class="text-2xl font-bold text-amber-600 mt-1">0</h4>
+                            </div>
+                            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">เอกสารสมบูรณ์</p>
+                                <h4 id="statApproved" class="text-2xl font-bold text-emerald-600 mt-1">0</h4>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">ต้องแก้ไขเอกสาร</p>
+                                <h4 id="statFix" class="text-2xl font-bold text-rose-600 mt-1">0</h4>
+                            </div>
+                            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden space-y-4 p-6 w-full">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">รายชื่อผู้สมัครเรียน ชั้น ม.1 และ ม.4 (<span id="adminTableYearText">ปี 2569</span>)</h3>
+                                <p class="text-xs text-slate-500">จัดการ ตรวจสอบเอกสาร ปพ.1 และปรับเปลี่ยนสถานะการสมัคร</p>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2">
+                                <input type="text" id="adminSearchInput" onkeyup="filterAdminTable()" placeholder="ค้นหาชื่อ/เลขสมัคร..." class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                                <select id="adminYearFilter" onchange="filterAdminTable()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500 font-semibold text-edu-700">
+                                    <option value="">ทุกปีการศึกษา</option>
+                                    <option value="2568">ปีการศึกษา 2568</option>
+                                    <option value="2569">ปีการศึกษา 2569</option>
+                                    <option value="2570">ปีการศึกษา 2570</option>
+                                    <option value="2571">ปีการศึกษา 2571</option>
+                                </select>
+                                <select id="adminLevelFilter" onchange="filterAdminTable()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                                    <option value="">ทุกระดับชั้น</option>
+                                    <option value="มัธยมศึกษาปีที่ 1">มัธยมศึกษาปีที่ 1</option>
+                                    <option value="มัธยมศึกษาปีที่ 4">มัธยมศึกษาปีที่ 4</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-3.5">เลขใบสมัคร</th>
+                                        <th class="p-3.5">ชื่อ-นามสกุล</th>
+                                        <th class="p-3.5">ปีการศึกษา / ระดับชั้น / แผนการเรียน</th>
+                                        <th class="p-3.5">เบอร์ผู้ปกครอง</th>
+                                        <th class="p-3.5">สถานะเอกสาร</th>
+                                        <th class="p-3.5 text-center">การจัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody" class="divide-y divide-slate-100">
+                                    <!-- DYNAMIC ROWS INSERTED HERE -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBSECTION 2: TRACK MANAGEMENT -->
+                <div id="admin-subtab-tracks" class="hidden space-y-6">
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">จัดการสายการเรียน / แผนการเรียน</h3>
+                            <p class="text-xs text-slate-500 mt-1">สามารถเพิ่มหรือลบแผนการเรียนสำหรับ ม.1 และ ม.4 ได้ที่นี่ ระบบจะอัปเดตแบบฟอร์มสมัครและหน้าหลักโดยอัตโนมัติ</p>
+                        </div>
+
+                        <!-- ADD NEW TRACK FORM -->
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center">
+                                <i class="fa-solid fa-plus-circle text-edu-600 mr-2"></i> เพิ่มสายการเรียนใหม่
+                            </h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">เลือกระดับชั้น</label>
+                                    <select id="newTrackLevel" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                                        <option value="มัธยมศึกษาปีที่ 1">มัธยมศึกษาปีที่ 1 (ม.1)</option>
+                                        <option value="มัธยมศึกษาปีที่ 4">มัธยมศึกษาปีที่ 4 (ม.4)</option>
+                                    </select>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อแผนการเรียน/สายการเรียนใหม่</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="newTrackName" placeholder="เช่น ศิลป์ - ดนตรี/การแสดง หรือ หุ่นยนต์และปัญญาประดิษฐ์" class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                                        <button onclick="addNewTrack()" class="bg-edu-600 hover:bg-edu-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5">
+                                            <i class="fa-solid fa-plus"></i>
+                                            <span>เพิ่มสายการเรียน</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CURRENT TRACKS DISPLAY -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                            <!-- M.1 TRACKS LIST -->
+                            <div class="border border-slate-200 rounded-2xl p-5 bg-white space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                    <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                                        <span class="w-3 h-3 rounded-full bg-edu-500 mr-2"></span> สายการเรียนระดับชั้น ม.1
+                                    </h4>
+                                    <span id="m1TrackCount" class="text-xs bg-edu-50 text-edu-700 px-2.5 py-0.5 rounded-full font-semibold">0 แผน</span>
+                                </div>
+                                <ul id="m1TrackManagerList" class="divide-y divide-slate-100 text-xs">
+                                    <!-- Dynamic M1 items -->
+                                </ul>
+                            </div>
+
+                            <!-- M.4 TRACKS LIST -->
+                            <div class="border border-slate-200 rounded-2xl p-5 bg-white space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                    <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                                        <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span> สายการเรียนระดับชั้น ม.4
+                                    </h4>
+                                    <span id="m4TrackCount" class="text-xs bg-purple-50 text-purple-700 px-2.5 py-0.5 rounded-full font-semibold">0 แผน</span>
+                                </div>
+                                <ul id="m4TrackManagerList" class="divide-y divide-slate-100 text-xs">
+                                    <!-- Dynamic M4 items -->
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- SUBSECTION 3: NEWS MANAGEMENT -->
+                <div id="admin-subtab-news" class="hidden space-y-6">
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">จัดการข่าวสาร & ประกาศประชาสัมพันธ์</h3>
+                            <p class="text-xs text-slate-500 mt-1">โพสต์ข่าวประชาสัมพันธ์ ประกาศกำหนดการสอบ หรือแจ้งเตือนสำคัญที่จะแสดงในหน้าแรกของเว็บไซต์</p>
+                        </div>
+
+                        <!-- ADD NEW NEWS FORM -->
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center">
+                                <i class="fa-solid fa-pen-to-square text-edu-600 mr-2"></i> สร้างข่าวประกาศใหม่
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">หัวข้อข่าว / หัวข้อประกาศ <span class="text-rose-500">*</span></label>
+                                    <input type="text" id="newNewsTitle" placeholder="เช่น ประกาศรายชื่อผู้มีสิทธิ์สอบคัดเลือก และผังห้องสอบ ม.1/ม.4" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">หมวดหมู่ข่าวสาร</label>
+                                    <select id="newNewsCategory" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                                        <option value="ประกาศสำคัญ">ประกาศสำคัญ</option>
+                                        <option value="กำหนดการสอบ">กำหนดการสอบ</option>
+                                        <option value="ข่าวประชาสัมพันธ์">ข่าวประชาสัมพันธ์</option>
+                                        <option value="คำแนะนำการเตรียมตัว">คำแนะนำการเตรียมตัว</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">รายละเอียดข่าวสาร <span class="text-rose-500">*</span></label>
+                                <textarea id="newNewsContent" rows="3" placeholder="กรอกเนื้อหาประกาศโดยละเอียด..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500"></textarea>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button onclick="addNewNews()" class="bg-edu-600 hover:bg-edu-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 shadow-sm">
+                                    <i class="fa-solid fa-bullhorn"></i>
+                                    <span>เผยแพร่ประกาศข่าว</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CURRENT NEWS LIST TABLE -->
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-slate-800 text-sm">รายการประกาศข่าวปัจจุบัน</h4>
+                            <div id="adminNewsList" class="space-y-3">
+                                <!-- Dynamic news list in admin -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBSECTION 4: EXAM VENUE & SCHEDULE MANAGEMENT -->
+                <div id="admin-subtab-exams" class="hidden space-y-6">
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">กำหนดสถานที่สอบ และ กำหนดการสอบส่วนกลาง</h3>
+                            <p class="text-xs text-slate-500 mt-1">ตั้งค่าวัน-เวลาสอบ อาคารเรียน และห้องสอบมาตรฐานสำหรับระดับชั้น ม.1 และ ม.4 (ข้อมูลนี้จะไปปรากฏบนบัตรประจำตัวสอบ)</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- LEVEL M.1 EXAM VENUE CONFIG -->
+                            <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
+                                <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+                                    <div class="w-10 h-10 bg-edu-100 text-edu-700 rounded-xl flex items-center justify-center font-bold text-lg">
+                                        ม.1
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">กำหนดการสอบ ระดับชั้น ม.1</h4>
+                                        <p class="text-[11px] text-slate-500">มัธยมศึกษาปีที่ 1</p>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <label class="block font-semibold text-slate-700 mb-1">วันและเวลาสอบมาตรฐาน</label>
+                                        <input type="text" id="m1ExamDateConfig" placeholder="เช่น 5 เมษายน 2569 (09:00 - 12:00 น.)" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-slate-700 mb-1">อาคารและห้องสอบหลัก</label>
+                                        <input type="text" id="m1ExamRoomConfig" placeholder="เช่น อาคาร 3 ชั้น 2 ห้อง 322" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500">
+                                    </div>
+                                    <div class="pt-2">
+                                        <button onclick="saveExamVenueConfig('มัธยมศึกษาปีที่ 1')" class="w-full bg-edu-600 hover:bg-edu-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center space-x-1.5">
+                                            <i class="fa-solid fa-floppy-disk"></i>
+                                            <span>บันทึกสถานที่สอบ ม.1 & อัปเดตผู้สมัครทั้งหมด</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LEVEL M.4 EXAM VENUE CONFIG -->
+                            <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
+                                <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+                                    <div class="w-10 h-10 bg-purple-100 text-purple-700 rounded-xl flex items-center justify-center font-bold text-lg">
+                                        ม.4
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">กำหนดการสอบ ระดับชั้น ม.4</h4>
+                                        <p class="text-[11px] text-slate-500">มัธยมศึกษาปีที่ 4</p>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <label class="block font-semibold text-slate-700 mb-1">วันและเวลาสอบมาตรฐาน</label>
+                                        <input type="text" id="m4ExamDateConfig" placeholder="เช่น 5 เมษายน 2569 (13:00 - 16:00 น.)" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-slate-700 mb-1">อาคารและห้องสอบหลัก</label>
+                                        <input type="text" id="m4ExamRoomConfig" placeholder="เช่น อาคาร 4 ชั้น 3 ห้อง 433" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-edu-500">
+                                    </div>
+                                    <div class="pt-2">
+                                        <button onclick="saveExamVenueConfig('มัธยมศึกษาปีที่ 4')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center space-x-1.5">
+                                            <i class="fa-solid fa-floppy-disk"></i>
+                                            <span>บันทึกสถานที่สอบ ม.4 & อัปเดตผู้สมัครทั้งหมด</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 text-xs text-sky-800 flex items-start space-x-3">
+                            <i class="fa-solid fa-circle-info text-base text-sky-600 mt-0.5"></i>
+                            <div>
+                                <p class="font-bold">คำแนะนำการกำหนดสถานที่สอบเพิ่มเติม</p>
+                                <p class="mt-0.5">แอดมินยังสามารถกดแก้ไขสถานที่สอบ เลขที่นั่งสอบ หรือห้องสอบแยกเฉพาะผู้สมัครแต่ละรายได้ในเมนู "ผู้สมัครเรียน" -> "ดู/อนุมัติ"</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL FOR DETAIL VIEW / EDIT STATUS & EXAM ROOM & VIEW DOCUMENT (ปพ.1) -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-xl bg-edu-100 text-edu-700 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-file-contract"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base">ตรวจสอบเอกสารและข้อมูลผู้สมัคร</h3>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="modalDetailContent" class="space-y-6 text-xs text-slate-700">
+                <!-- DETAILS CONTENT & POR POR 1 IMAGE PREVIEW ARE INJECTED DYNAMICALLY HERE -->
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+                <button id="modalDeleteBtn" onclick="" class="px-4 py-2 bg-rose-50 hover:bg-rose-600 hover:text-white rounded-xl text-xs font-semibold text-rose-600 transition-all flex items-center space-x-1.5">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>ลบใบสมัครนี้</span>
+                </button>
+
+                <div class="flex space-x-2">
+                    <button onclick="closeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-medium text-slate-700 transition-all">ยกเลิก</button>
+                    <button id="modalSaveBtn" onclick="" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-md shadow-emerald-100">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>บันทึกการเปลี่ยนแปลง</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX MODAL FOR FULL-SIZE POR POR 1 PREVIEW -->
+    <div id="docLightboxModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[60] hidden flex flex-col items-center justify-center p-4">
+        <div class="absolute top-4 right-4 flex space-x-2">
+            <a id="lightboxDownloadBtn" href="#" download="por_por_1_document.png" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center space-x-1.5">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลดรูป ปพ.1</span>
+            </a>
+            <button onclick="closeLightbox()" class="bg-white/20 hover:bg-rose-600 text-white p-2 rounded-xl transition-all">
+                <i class="fa-solid fa-xmark text-lg w-6 h-6 flex items-center justify-center"></i>
+            </button>
+        </div>
+        <div class="max-w-4xl max-h-[85vh] p-2 flex items-center justify-center">
+            <img id="lightboxImage" src="" alt="เอกสารใบ ปพ.1 ขนาดเต็ม" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/20">
+        </div>
+        <p class="text-white/70 text-xs mt-3"><i class="fa-solid fa-circle-info mr-1"></i> ตรวจสอบรายละเอียดใบ ปพ.1 หรือเอกสารแสดงผลการเรียนอย่างละเอียด</p>
+    </div>
+
+    <!-- CUSTOM TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- CUSTOM CONFIRMATION MODAL -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl text-center">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-xl mx-auto">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <h3 id="confirmModalTitle" class="font-bold text-slate-900 text-base">ยืนยันการทำรายการ</h3>
+            <p id="confirmModalText" class="text-xs text-slate-600 leading-relaxed">คุณต้องการดำเนินการต่อหรือไม่?</p>
+            <div class="flex space-x-2 pt-2">
+                <button id="confirmCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold text-slate-700">ยกเลิก</button>
+                <button id="confirmOkBtn" class="flex-1 px-4 py-2 bg-rose-600 hover:bg-rose-700 rounded-xl text-xs font-semibold text-white">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-2">
+            <p>© 2569 โรงเรียนกุศลวิทยา (Kusonwittaya School) - ระบบรับสมัคร ม.1 และ ม.4</p>
+            <p>ระบบรับสมัครนักเรียนออนไลน์ พัฒนาเพื่อความสะดวก รวดเร็ว และเป็นธรรม</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const GAS_WEB_APP_URL = ""; // ตั้งค่า URL Google Apps Script (ถ้ามี)
+        let isAdminLoggedIn = false;
+        
+        // Active system academic year set by admin (Default: 2569)
+        let activeAcademicYear = localStorage.getItem('kuson_active_academic_year') || '2569';
+
+        // SAMPLE DUMMY POR POR 1 SVG IMAGE FOR DEMO PURPOSE
+        const samplePorPor1Image = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" style="background-color:%23ffffff;font-family:Prompt,sans-serif;"><rect width="590" height="790" x="5" y="5" fill="none" stroke="%230284c7" stroke-width="3" rx="10"/><rect width="570" height="770" x="15" y="15" fill="none" stroke="%23334155" stroke-width="1"/><text x="300" y="60" font-size="18" font-weight="bold" text-anchor="middle" fill="%23075985">เอกสารแสดงผลการเรียน (ปพ.1:ผ)</text><text x="300" y="85" font-size="13" text-anchor="middle" fill="%23475569">กระทรวงศึกษาธิการ / โรงเรียนกุศลวิทยา</text><line x1="50" y1="105" x2="550" y2="105" stroke="%23cbd5e1" stroke-width="2"/><text x="50" y="140" font-size="12" font-weight="bold" fill="%231e293b">ชื่อ-นามสกุล ผู้เรียน:</text><text x="180" y="140" font-size="12" fill="%230f172a">เด็กชายกุศล รักษ์เรียน</text><text x="50" y="165" font-size="12" font-weight="bold" fill="%231e293b">เลขประจำตัวประชาชน:</text><text x="180" y="165" font-size="12" fill="%230f172a">1100200300400</text><text x="50" y="190" font-size="12" font-weight="bold" fill="%231e293b">สถานศึกษาเดิม:</text><text x="180" y="190" font-size="12" fill="%230f172a">โรงเรียนอนุบาลกุศลวิทยา</text><rect x="50" y="220" width="500" height="360" fill="%23f8fafc" stroke="%23e2e8f0" rx="8"/><text x="300" y="250" font-size="13" font-weight="bold" text-anchor="middle" fill="%230369a1">สรุปผลการเรียนเฉลี่ยรวม (GPAX)</text><text x="300" y="320" font-size="48" font-weight="bold" text-anchor="middle" fill="%23059669">3.85</text><text x="300" y="360" font-size="12" text-anchor="middle" fill="%2364748b">ผลการเรียนเฉลี่ยสะสม 6 ภาคเรียน</text><line x1="80" y1="390" x2="520" y2="390" stroke="%23e2e8f0" stroke-width="1"/><text x="100" y="420" font-size="11" fill="%23334155">• กลุ่มสาระวิชาวิทยาศาสตร์และเทคโนโลยี: 3.90</text><text x="100" y="445" font-size="11" fill="%23334155">• กลุ่มสาระวิชาคณิตศาสตร์: 3.80</text><text x="100" y="470" font-size="11" fill="%23334155">• กลุ่มสาระวิชาภาษาไทย: 3.85</text><text x="100" y="495" font-size="11" fill="%23334155">• กลุ่มสาระวิชาภาษาต่างประเทศ: 3.95</text><text x="100" y="540" font-size="11" font-weight="bold" fill="%23059669">สถานะการอนุมัติ: สำเร็จการศึกษาตามหลักสูตรแกนกลาง</text><circle cx="480" cy="670" r="45" fill="none" stroke="%23059669" stroke-width="2" stroke-dasharray="4,2"/><text x="480" y="668" font-size="10" font-weight="bold" text-anchor="middle" fill="%23059669">ตราประทับ</text><text x="480" y="682" font-size="9" text-anchor="middle" fill="%23059669">สถานศึกษา</text><line x1="80" y1="690" x2="280" y2="690" stroke="%2394a3b8" stroke-width="1" stroke-dasharray="2,2"/><text x="180" y="710" font-size="11" text-anchor="middle" fill="%23475569">(นายประธาน วิชาการ)</text><text x="180" y="728" font-size="10" text-anchor="middle" fill="%2364748b">นายทะเบียนสถานศึกษา</text></svg>`;
+
+        // SAMPLE INITIAL APPLICANTS WITH POR POR 1 ATTACHMENT
+        const defaultApplicants = [
+            {
+                idCard: "1100200300400",
+                appNo: "KSW-69001",
+                academicYear: "2569",
+                prefix: "เด็กชาย",
+                firstName: "กุศล",
+                lastName: "รักษ์เรียน",
+                level: "มัธยมศึกษาปีที่ 1",
+                track: "ห้องเรียนพิเศษ Gifted (วิทย์-คณิต)",
+                parentName: "นายสมชาย รักษ์เรียน",
+                parentPhone: "0812345678",
+                photoBase64: "",
+                docBase64: samplePorPor1Image,
+                docName: "ปพ1_กุศล_รักษ์เรียน.png",
+                status: "รอตรวจสอบเอกสาร",
+                adminNote: "",
+                examRoom: "อาคาร 3 ชั้น 2 ห้อง 322",
+                examSeat: "01",
+                examDate: "5 เมษายน 2569 (09:00 - 12:00 น.)"
+            },
+            {
+                idCard: "1100200555999",
+                appNo: "KSW-69002",
+                academicYear: "2569",
+                prefix: "นางสาว",
+                firstName: "กานดา",
+                lastName: "เรียนดี",
+                level: "มัธยมศึกษาปีที่ 4",
+                track: "วิทยาศาสตร์ - คณิตศาสตร์",
+                parentName: "นางสมศรี เรียนดี",
+                parentPhone: "0898765432",
+                photoBase64: "",
+                docBase64: samplePorPor1Image,
+                docName: "ปพ1_กานดา_เรียนดี.png",
+                status: "เอกสารสมบูรณ์",
+                adminNote: "ตรวจสอบเกรด ปพ.1 ครบถ้วนแล้ว",
+                examRoom: "อาคาร 4 ชั้น 3 ห้อง 433",
+                examSeat: "02",
+                examDate: "5 เมษายน 2569 (13:00 - 16:00 น.)"
+            }
+        ];
+
+        // Load applicants from LocalStorage or initialize with default sample
+        let applicants = JSON.parse(localStorage.getItem('kuson_applicants_data'));
+        if (!applicants || applicants.length === 0) {
+            applicants = defaultApplicants;
+            localStorage.setItem('kuson_applicants_data', JSON.stringify(applicants));
+        }
+
+        // Default exam venue configurations
+        const defaultExamConfigs = {
+            "มัธยมศึกษาปีที่ 1": {
+                examDate: "5 เมษายน 2569 (09:00 - 12:00 น.)",
+                examRoom: "อาคาร 3 ชั้น 2 ห้อง 322"
+            },
+            "มัธยมศึกษาปีที่ 4": {
+                examDate: "5 เมษายน 2569 (13:00 - 16:00 น.)",
+                examRoom: "อาคาร 4 ชั้น 3 ห้อง 433"
+            }
+        };
+
+        let examConfigs = JSON.parse(localStorage.getItem('kuson_exam_configs')) || defaultExamConfigs;
+
+        function saveExamConfigsToStorage() {
+            localStorage.setItem('kuson_exam_configs', JSON.stringify(examConfigs));
+        }
+
+        // Default initial news items
+        const defaultNews = [
+            {
+                id: 1,
+                title: "กำหนดการสอบคัดเลือกนักเรียนชั้น ม.1 และ ม.4 ปีการศึกษา 2569",
+                category: "กำหนดการสอบ",
+                date: "25 ก.พ. 2569",
+                content: "โรงเรียนกุศลวิทยากำหนดสอบคัดเลือกในวันที่ 5 เมษายน 2569 โดย ม.1 สอบภาคเช้า (09:00-12:00 น.) และ ม.4 สอบภาคบ่าย (13:00-16:00 น.) ผู้สมัครโปรดนำบัตรประจำตัวสอบและบัตรประชาชนมาในวันสอบ"
+            },
+            {
+                id: 2,
+                title: "แนวทางการรับสมัครนักเรียนออนไลน์และการเตรียมเอกสาร ปพ.1",
+                category: "คำแนะนำการเตรียมตัว",
+                date: "20 ก.พ. 2569",
+                content: "ผู้สมัครจะต้องอัปโหลดรูปถ่ายหน้าตรงชุดนักเรียน และสำเนา ปพ.1 หรือใบรับรองผลการเรียนเพื่อตรวจสอบคุณสมบัติก่อนพิมพ์บัตรประจำตัวสอบ"
+            }
+        ];
+
+        let newsItems = JSON.parse(localStorage.getItem('kuson_news_data')) || defaultNews;
+
+        function saveNewsToStorage() {
+            localStorage.setItem('kuson_news_data', JSON.stringify(newsItems));
+        }
+
+        function renderPublicNews() {
+            const newsGrid = document.getElementById('homeNewsGrid');
+            if (!newsGrid) return;
+
+            if (newsItems.length === 0) {
+                newsGrid.innerHTML = `
+                    <div class="col-span-full bg-slate-100/70 p-6 rounded-2xl text-center text-slate-400 text-xs">
+                        ยังไม่มีข่าวประกาศในขณะนี้
+                    </div>`;
+                return;
+            }
+
+            newsGrid.innerHTML = newsItems.map(item => {
+                let badgeClass = "bg-edu-100 text-edu-700";
+                if (item.category === "ประกาศสำคัญ") badgeClass = "bg-rose-100 text-rose-700";
+                if (item.category === "กำหนดการสอบ") badgeClass = "bg-amber-100 text-amber-700";
+
+                return `
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="px-2.5 py-0.5 rounded-full font-semibold ${badgeClass}">${item.category}</span>
+                                <span class="text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${item.date}</span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm leading-snug line-clamp-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed line-clamp-3">${item.content}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAdminNews() {
+            const listContainer = document.getElementById('adminNewsList');
+            if (!listContainer) return;
+
+            if (newsItems.length === 0) {
+                listContainer.innerHTML = `<p class="text-slate-400 text-xs py-4 text-center">ไม่มีรายการข่าวประกาศ</p>`;
+                return;
+            }
+
+            listContainer.innerHTML = newsItems.map((item, index) => `
+                <div class="p-4 border border-slate-200 rounded-2xl bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[10px]">${item.category}</span>
+                            <span class="text-[10px] text-slate-400">${item.date}</span>
+                        </div>
+                        <h5 class="font-bold text-slate-800 text-xs">${item.title}</h5>
+                        <p class="text-[11px] text-slate-500 line-clamp-2">${item.content}</p>
+                    </div>
+                    <button onclick="removeNews(${index})" class="bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-600 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1 shrink-0">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>ลบข่าว</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addNewNews() {
+            const title = document.getElementById('newNewsTitle').value.trim();
+            const category = document.getElementById('newNewsCategory').value;
+            const content = document.getElementById('newNewsContent').value.trim();
+
+            if (!title || !content) {
+                showNotification("กรุณากรอกหัวข้อข่าวและรายละเอียดให้ครบถ้วน", "error");
+                return;
+            }
+
+            const todayStr = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            const newNewsObj = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                date: todayStr,
+                content: content
+            };
+
+            newsItems.unshift(newNewsObj);
+            saveNewsToStorage();
+            renderPublicNews();
+            renderAdminNews();
+
+            document.getElementById('newNewsTitle').value = '';
+            document.getElementById('newNewsContent').value = '';
+
+            showNotification("เผยแพร่ประกาศข่าวใหม่เรียบร้อยแล้ว");
+        }
+
+        function removeNews(index) {
+            showConfirm("ยืนยันการลบข่าวสาร", "คุณต้องการลบประกาศข่าวนี้ใช่หรือไม่?", () => {
+                newsItems.splice(index, 1);
+                saveNewsToStorage();
+                renderPublicNews();
+                renderAdminNews();
+                showNotification("ลบข่าวประชาสัมพันธ์แล้ว", "info");
+            });
+        }
+
+        function renderExamVenueConfigs() {
+            const m1Date = document.getElementById('m1ExamDateConfig');
+            const m1Room = document.getElementById('m1ExamRoomConfig');
+            const m4Date = document.getElementById('m4ExamDateConfig');
+            const m4Room = document.getElementById('m4ExamRoomConfig');
+
+            if (m1Date) m1Date.value = examConfigs["มัธยมศึกษาปีที่ 1"]?.examDate || `5 เมษายน ${activeAcademicYear} (09:00 - 12:00 น.)`;
+            if (m1Room) m1Room.value = examConfigs["มัธยมศึกษาปีที่ 1"]?.examRoom || "อาคาร 3 ชั้น 2 ห้อง 322";
+
+            if (m4Date) m4Date.value = examConfigs["มัธยมศึกษาปีที่ 4"]?.examDate || `5 เมษายน ${activeAcademicYear} (13:00 - 16:00 น.)`;
+            if (m4Room) m4Room.value = examConfigs["มัธยมศึกษาปีที่ 4"]?.examRoom || "อาคาร 4 ชั้น 3 ห้อง 433";
+        }
+
+        function saveExamVenueConfig(level) {
+            let dateVal, roomVal;
+            if (level === "มัธยมศึกษาปีที่ 1") {
+                dateVal = document.getElementById('m1ExamDateConfig').value.trim();
+                roomVal = document.getElementById('m1ExamRoomConfig').value.trim();
+            } else {
+                dateVal = document.getElementById('m4ExamDateConfig').value.trim();
+                roomVal = document.getElementById('m4ExamRoomConfig').value.trim();
+            }
+
+            if (!dateVal || !roomVal) {
+                showNotification("กรุณากรอกวันเวลาและอาคารห้องสอบให้ครบถ้วน", "error");
+                return;
+            }
+
+            if (!examConfigs[level]) examConfigs[level] = {};
+            examConfigs[level].examDate = dateVal;
+            examConfigs[level].examRoom = roomVal;
+
+            saveExamConfigsToStorage();
+
+            applicants.forEach(app => {
+                if (app.level.includes(level)) {
+                    app.examDate = dateVal;
+                    app.examRoom = roomVal;
+                }
+            });
+
+            saveApplicantsToStorage();
+            if (isAdminLoggedIn) renderAdminTable();
+
+            showNotification(`อัปเดตกำหนดการและสถานที่สอบสำหรับ ${level} เรียบร้อยแล้ว`);
+        }
+
+        function resetStatusView() {
+            const initialNotice = document.getElementById('statusInitialNotice');
+            const notFoundArea = document.getElementById('searchNotFoundArea');
+            const resultArea = document.getElementById('searchResultArea');
+            if (initialNotice) initialNotice.classList.remove('hidden');
+            if (notFoundArea) notFoundArea.classList.add('hidden');
+            if (resultArea) resultArea.classList.add('hidden');
+        }
+
+        function refreshYearDisplays() {
+            const globalBadge = document.getElementById('globalActiveYearDisplay');
+            if (globalBadge) globalBadge.innerText = activeAcademicYear;
+
+            const applyYearText = document.getElementById('applyYearText');
+            if (applyYearText) applyYearText.innerText = activeAcademicYear;
+
+            const applyYearHidden = document.getElementById('applyYear');
+            if (applyYearHidden) applyYearHidden.value = activeAcademicYear;
+
+            const adminInput = document.getElementById('adminActiveYearInput');
+            if (adminInput) adminInput.value = activeAcademicYear;
+
+            const heroBadge = document.getElementById('heroYearBadgeText');
+            if (heroBadge) heroBadge.innerText = `เปิดรับสมัครนักเรียนชั้น ม.1 และ ม.4 ปีการศึกษา ${activeAcademicYear}`;
+
+            const sectionDesc = document.getElementById('homeSectionYearDesc');
+            if (sectionDesc) sectionDesc.innerText = `ปีการศึกษา ${activeAcademicYear} โรงเรียนกุศลวิทยา เปิดรับเฉพาะระดับชั้น ม.1 และ ม.4`;
+
+            const cardYearText = document.getElementById('cardAcademicYear');
+            if (cardYearText) cardYearText.innerText = activeAcademicYear;
+
+            const adminYearText = document.getElementById('adminTableYearText');
+            if (adminYearText) adminYearText.innerText = `ปี ${activeAcademicYear}`;
+
+            renderExamVenueConfigs();
+
+            if (isAdminLoggedIn) {
+                renderAdminTable();
+            }
+        }
+
+        function updateSystemAcademicYear() {
+            const input = document.getElementById('adminActiveYearInput');
+            const newYear = input.value.trim();
+
+            if (!newYear || newYear.length !== 4 || isNaN(newYear)) {
+                showNotification("กรุณาระบุปีการศึกษาให้ถูกต้อง (เช่น 2569)", "error");
+                return;
+            }
+
+            activeAcademicYear = newYear;
+            localStorage.setItem('kuson_active_academic_year', activeAcademicYear);
+            refreshYearDisplays();
+            showNotification(`อัปเดตปีการศึกษาของระบบเป็น พ.ศ. ${activeAcademicYear} เรียบร้อยแล้ว`);
+        }
+
+        // Default track options
+        const defaultTracks = {
+            "มัธยมศึกษาปีที่ 1": [
+                "แผนการเรียนทั่วไป (วิทย์-คณิต / ภาษา)",
+                "ห้องเรียนพิเศษ Gifted (วิทย์-คณิต)",
+                "English Program (EP)"
+            ],
+            "มัธยมศึกษาปีที่ 4": [
+                "วิทยาศาสตร์ - คณิตศาสตร์",
+                "ศิลป์ - คำนวณ",
+                "ศิลป์ - ภาษา (อังกฤษ/จีน/ญี่ปุ่น)",
+                "English Program (EP)"
+            ]
+        };
+
+        let trackOptions = JSON.parse(localStorage.getItem('kuson_track_options')) || defaultTracks;
+
+        function saveTrackOptionsToStorage() {
+            localStorage.setItem('kuson_track_options', JSON.stringify(trackOptions));
+        }
+
+        function saveApplicantsToStorage() {
+            localStorage.setItem('kuson_applicants_data', JSON.stringify(applicants));
+        }
+
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-emerald-600 text-white";
+            let icon = "fa-circle-check";
+            if (type === 'error') {
+                bgClass = "bg-rose-600 text-white";
+                icon = "fa-circle-xmark";
+            } else if (type === 'info') {
+                bgClass = "bg-sky-600 text-white";
+                icon = "fa-circle-info";
+            }
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl ${bgClass} text-xs font-medium flex items-center space-x-2 transition-all transform translate-y-2 opacity-0 duration-300`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function showConfirm(title, message, onConfirm) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalText').innerText = message;
+            modal.classList.remove('hidden');
+
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+
+            const handleOk = () => {
+                cleanup();
+                onConfirm();
+            };
+
+            const handleCancel = () => {
+                cleanup();
+            };
+
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                okBtn.removeEventListener('click', handleOk);
+                cancelBtn.removeEventListener('click', handleCancel);
+            };
+
+            okBtn.addEventListener('click', handleOk);
+            cancelBtn.addEventListener('click', handleCancel);
+        }
+
+        function renderTracks() {
+            const homeM1 = document.getElementById('homeM1TrackList');
+            if (homeM1) {
+                homeM1.innerHTML = (trackOptions["มัธยมศึกษาปีที่ 1"] || []).map(t => 
+                    `<li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-500 mr-2 text-[10px]"></i> ${t}</li>`
+                ).join('');
+            }
+
+            const homeM4 = document.getElementById('homeM4TrackList');
+            if (homeM4) {
+                homeM4.innerHTML = (trackOptions["มัธยมศึกษาปีที่ 4"] || []).map(t => 
+                    `<li class="flex items-center"><i class="fa-solid fa-circle-check text-emerald-500 mr-2 text-[10px]"></i> ${t}</li>`
+                ).join('');
+            }
+
+            renderAdminTrackManager();
+        }
+
+        function renderAdminTrackManager() {
+            const m1List = document.getElementById('m1TrackManagerList');
+            const m4List = document.getElementById('m4TrackManagerList');
+            const m1Tracks = trackOptions["มัธยมศึกษาปีที่ 1"] || [];
+            const m4Tracks = trackOptions["มัธยมศึกษาปีที่ 4"] || [];
+
+            document.getElementById('m1TrackCount').innerText = `${m1Tracks.length} แผน`;
+            document.getElementById('m4TrackCount').innerText = `${m4Tracks.length} แผน`;
+
+            if (m1List) {
+                if (m1Tracks.length === 0) {
+                    m1List.innerHTML = `<li class="py-3 text-slate-400 text-center">ยังไม่มีสายการเรียน</li>`;
+                } else {
+                    m1List.innerHTML = m1Tracks.map((t, index) => `
+                        <li class="py-2.5 flex items-center justify-between hover:bg-slate-50 px-2 rounded-lg group">
+                            <span class="font-medium text-slate-700">${t}</span>
+                            <button onclick="removeTrack('มัธยมศึกษาปีที่ 1', ${index})" class="text-slate-400 hover:text-rose-600 p-1 transition-all" title="ลบสายการเรียน">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </li>
+                    `).join('');
+                }
+            }
+
+            if (m4List) {
+                if (m4Tracks.length === 0) {
+                    m4List.innerHTML = `<li class="py-3 text-slate-400 text-center">ยังไม่มีสายการเรียน</li>`;
+                } else {
+                    m4List.innerHTML = m4Tracks.map((t, index) => `
+                        <li class="py-2.5 flex items-center justify-between hover:bg-slate-50 px-2 rounded-lg group">
+                            <span class="font-medium text-slate-700">${t}</span>
+                            <button onclick="removeTrack('มัธยมศึกษาปีที่ 4', ${index})" class="text-slate-400 hover:text-rose-600 p-1 transition-all" title="ลบสายการเรียน">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </li>
+                    `).join('');
+                }
+            }
+        }
+
+        function addNewTrack() {
+            const level = document.getElementById('newTrackLevel').value;
+            const trackInput = document.getElementById('newTrackName');
+            const trackName = trackInput.value.trim();
+
+            if (!trackName) {
+                showNotification("กรุณากรอกชื่อแผนการเรียน/สายการเรียน", "error");
+                return;
+            }
+
+            if (!trackOptions[level]) {
+                trackOptions[level] = [];
+            }
+
+            if (trackOptions[level].includes(trackName)) {
+                showNotification("มีสายการเรียนนี้อยู่ในระบบแล้ว", "error");
+                return;
+            }
+
+            trackOptions[level].push(trackName);
+            saveTrackOptionsToStorage();
+            renderTracks();
+            trackInput.value = '';
+            showNotification(`เพิ่มสายการเรียน "${trackName}" เรียบร้อยแล้ว`);
+        }
+
+        function removeTrack(level, index) {
+            const trackName = trackOptions[level][index];
+            showConfirm(
+                "ยืนยันการลบสายการเรียน",
+                `คุณต้องการลบ "${trackName}" ออกจากระดับชั้น ${level} ใช่หรือไม่?`,
+                () => {
+                    trackOptions[level].splice(index, 1);
+                    saveTrackOptionsToStorage();
+                    renderTracks();
+                    
+                    const currentSelectedLevel = document.getElementById('applyLevel').value;
+                    if (currentSelectedLevel === level) {
+                        handleLevelChange(level);
+                    }
+
+                    showNotification(`ลบสายการเรียนเรียบร้อยแล้ว`, "info");
+                }
+            );
+        }
+
+        function switchTab(tabName) {
+            document.getElementById('tab-home-content').classList.add('hidden');
+            document.getElementById('tab-apply-content').classList.add('hidden');
+            document.getElementById('tab-status-content').classList.add('hidden');
+            document.getElementById('tab-admin-content').classList.add('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-edu-600', 'text-white', 'shadow');
+                btn.classList.add('text-slate-600');
+            });
+
+            document.getElementById(`tab-${tabName}-content`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-edu-600', 'text-white', 'shadow');
+                activeBtn.classList.remove('text-slate-600');
+            }
+
+            if (tabName === 'status') {
+                document.getElementById('searchIdCard').value = '';
+                resetStatusView();
+            }
+
+            if (tabName === 'admin') {
+                if (isAdminLoggedIn) {
+                    document.getElementById('admin-login-view').classList.add('hidden');
+                    document.getElementById('admin-dashboard-view').classList.remove('hidden');
+                    fetchApplicantsFromGAS();
+                    renderAdminTable();
+                } else {
+                    document.getElementById('admin-login-view').classList.remove('hidden');
+                    document.getElementById('admin-dashboard-view').classList.add('hidden');
+                }
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchAdminSubtab(subtab) {
+            const appsSec = document.getElementById('admin-subtab-applicants');
+            const tracksSec = document.getElementById('admin-subtab-tracks');
+            const newsSec = document.getElementById('admin-subtab-news');
+            const examsSec = document.getElementById('admin-subtab-exams');
+
+            const btnApps = document.getElementById('adminSubtabBtnApps');
+            const btnTracks = document.getElementById('adminSubtabBtnTracks');
+            const btnNews = document.getElementById('adminSubtabBtnNews');
+            const btnExams = document.getElementById('adminSubtabBtnExams');
+
+            const inactiveClass = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+            const activeClass = "px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-white text-slate-800 shadow-sm transition-all";
+
+            appsSec.classList.add('hidden');
+            tracksSec.classList.add('hidden');
+            newsSec.classList.add('hidden');
+            examsSec.classList.add('hidden');
+
+            btnApps.className = inactiveClass;
+            btnTracks.className = inactiveClass;
+            btnNews.className = inactiveClass;
+            btnExams.className = inactiveClass;
+
+            if (subtab === 'applicants') {
+                appsSec.classList.remove('hidden');
+                btnApps.className = activeClass;
+            } else if (subtab === 'tracks') {
+                tracksSec.classList.remove('hidden');
+                btnTracks.className = activeClass;
+                renderAdminTrackManager();
+            } else if (subtab === 'news') {
+                newsSec.classList.remove('hidden');
+                btnNews.className = activeClass;
+                renderAdminNews();
+            } else if (subtab === 'exams') {
+                examsSec.classList.remove('hidden');
+                btnExams.className = activeClass;
+                renderExamVenueConfigs();
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pwdInput = document.getElementById('adminPasswordInput');
+            const errorMsg = document.getElementById('adminAuthError');
+
+            if (pwdInput.value === 'ppp123') {
+                isAdminLoggedIn = true;
+                errorMsg.classList.add('hidden');
+                pwdInput.value = '';
+                
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-dashboard-view').classList.remove('hidden');
+                fetchApplicantsFromGAS();
+                renderAdminTable();
+                showNotification("เข้าสู่ระบบเจ้าหน้าที่เรียบร้อยแล้ว");
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminAuthError').classList.add('hidden');
+            switchTab('admin');
+            showNotification("ออกจากระบบแล้ว", "info");
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function selectLevelAndApply(level) {
+            switchTab('apply');
+            const levelSelect = document.getElementById('applyLevel');
+            levelSelect.value = level;
+            handleLevelChange(level);
+        }
+
+        function handleLevelChange(level) {
+            const trackSelect = document.getElementById('applyTrack');
+            trackSelect.innerHTML = '<option value="">-- เลือกแผนการเรียน / โครงการ --</option>';
+
+            if (level && trackOptions[level]) {
+                trackOptions[level].forEach(track => {
+                    const opt = document.createElement('option');
+                    opt.value = track;
+                    opt.textContent = track;
+                    trackSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function validateStep1AndNext() {
+            const level = document.getElementById('applyLevel').value;
+            const track = document.getElementById('applyTrack').value;
+
+            if (!level) {
+                showNotification("กรุณาเลือกระดับชั้นที่ต้องการสมัคร", "error");
+                return;
+            }
+            if (!track) {
+                showNotification("กรุณาเลือกแผนการเรียน / โครงการ", "error");
+                return;
+            }
+
+            nextStep(2);
+        }
+
+        function nextStep(stepNumber) {
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`form-step-${i}`).classList.add('hidden');
+                const indicator = document.getElementById(`step-indicator-${i}`);
+                if (i <= stepNumber) {
+                    indicator.classList.add('bg-edu-600', 'text-white');
+                    indicator.classList.remove('bg-slate-100', 'text-slate-400');
+                } else {
+                    indicator.classList.remove('bg-edu-600', 'text-white');
+                    indicator.classList.add('bg-slate-100', 'text-slate-400');
+                }
+            }
+
+            document.getElementById(`form-step-${stepNumber}`).classList.remove('hidden');
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) resolve({ base64: "", name: "" });
+                const reader = new FileReader();
+                reader.onload = () => resolve({ base64: reader.result, name: file.name });
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const academicYear = activeAcademicYear;
+            const level = document.getElementById('applyLevel').value;
+            const track = document.getElementById('applyTrack').value;
+            const prefix = document.getElementById('studentPrefix').value;
+            const firstName = document.getElementById('studentFirstName').value;
+            const lastName = document.getElementById('studentLastName').value;
+            const idCard = document.getElementById('studentIdCard').value.trim();
+            const parentName = document.getElementById('parentName').value;
+            const parentPhone = document.getElementById('parentPhone').value;
+
+            const photoFile = document.getElementById('filePhoto').files[0];
+            const docFile = document.getElementById('fileDoc').files[0];
+
+            if (!docFile) {
+                showNotification("กรุณาแนบไฟล์สำเนา ปพ.1 หรือหนังสือรับรองผลการเรียน", "error");
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>กำลังบันทึกข้อมูลและไฟล์เอกสาร...';
+
+            try {
+                const photoData = await fileToBase64(photoFile);
+                const docData = await fileToBase64(docFile);
+
+                const yearShort = academicYear.slice(-2);
+                const yearCount = applicants.filter(a => a.academicYear === academicYear).length + 1;
+                const newAppNo = `KSW-${yearShort}${String(yearCount).padStart(3, '0')}`;
+                
+                const levelConfig = examConfigs[level] || {
+                    examDate: level.includes('มัธยมศึกษาปีที่ 1') ? `5 เมษายน ${academicYear} (09:00 - 12:00 น.)` : `5 เมษายน ${academicYear} (13:00 - 16:00 น.)`,
+                    examRoom: level.includes('มัธยมศึกษาปีที่ 1') ? 'อาคาร 3 ชั้น 2 ห้อง 322' : 'อาคาร 4 ชั้น 3 ห้อง 433'
+                };
+
+                const newApplicant = {
+                    idCard: idCard,
+                    appNo: newAppNo,
+                    academicYear: academicYear,
+                    prefix: prefix,
+                    firstName: firstName,
+                    lastName: lastName,
+                    level: level,
+                    track: track,
+                    parentName: parentName,
+                    parentPhone: parentPhone,
+                    photoBase64: photoData.base64 || "",
+                    docBase64: docData.base64 || "",
+                    docName: docData.name || "เอกสาร_ปพ1.png",
+                    status: "รอตรวจสอบเอกสาร",
+                    adminNote: "",
+                    examRoom: levelConfig.examRoom,
+                    examSeat: String(yearCount).padStart(2, '0'),
+                    examDate: levelConfig.examDate
+                };
+
+                applicants.unshift(newApplicant);
+                saveApplicantsToStorage();
+
+                showNotification(`ส่งใบสมัครเรียบร้อยแล้ว! เลขที่ใบสมัครของคุณคือ: ${newAppNo}`);
+                
+                document.getElementById('applicationForm').reset();
+                refreshYearDisplays();
+                handleLevelChange('');
+                nextStep(1);
+
+                switchTab('status');
+                document.getElementById('searchIdCard').value = idCard;
+                searchApplicantStatus();
+
+            } catch (err) {
+                showNotification("เกิดข้อผิดพลาดในการส่งข้อมูล: " + err.message, "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        }
+
+        function searchApplicantStatus() {
+            const queryId = document.getElementById('searchIdCard').value.trim();
+            const initialNotice = document.getElementById('statusInitialNotice');
+            const notFoundArea = document.getElementById('searchNotFoundArea');
+            const resultArea = document.getElementById('searchResultArea');
+
+            if (!queryId) {
+                showNotification("กรุณากรอกเลขประจำตัวประชาชน 13 หลัก หรือเลขที่ใบสมัคร", "error");
+                resetStatusView();
+                return;
+            }
+
+            const found = applicants.find(a => a.idCard === queryId || a.appNo === queryId);
+
+            initialNotice.classList.add('hidden');
+
+            if (found) {
+                notFoundArea.classList.add('hidden');
+                resultArea.classList.remove('hidden');
+
+                const appYear = found.academicYear || activeAcademicYear;
+
+                document.getElementById('resStudentName').innerText = `${found.prefix}${found.firstName} ${found.lastName}`;
+                document.getElementById('resStudentDetails').innerText = `เลขที่ใบสมัคร: ${found.appNo} | ปีการศึกษา: ${appYear} | ระดับชั้น: ${found.level} (${found.track})`;
+                
+                const badge = document.getElementById('resStatusBadge');
+                badge.innerText = found.status;
+                if (found.status.includes('สมบูรณ์')) {
+                    badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700";
+                } else if (found.status.includes('รอ')) {
+                    badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700";
+                } else {
+                    badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700";
+                }
+
+                const adminNoteBox = document.getElementById('resAdminNoteBox');
+                const adminNoteText = document.getElementById('resAdminNoteText');
+                if (found.adminNote) {
+                    adminNoteText.innerText = found.adminNote;
+                    adminNoteBox.classList.remove('hidden');
+                } else {
+                    adminNoteBox.classList.add('hidden');
+                }
+
+                document.getElementById('cardAppNo').innerText = found.appNo;
+                document.getElementById('cardAcademicYear').innerText = appYear;
+                document.getElementById('cardName').innerText = `${found.prefix}${found.firstName} ${found.lastName}`;
+                document.getElementById('cardIdCard').innerText = found.idCard;
+                document.getElementById('cardLevel').innerText = `${found.level} (${found.track})`;
+                document.getElementById('cardExamDate').innerText = found.examDate || `5 เมษายน ${appYear}`;
+                document.getElementById('cardExamRoom').innerText = found.examRoom || "อาคารเรียน 3";
+                document.getElementById('cardExamSeat').innerText = found.examSeat || "01";
+
+                const photoImg = document.getElementById('cardPhotoImg');
+                const photoFallback = document.getElementById('cardPhotoFallback');
+                if (found.photoBase64) {
+                    photoImg.src = found.photoBase64;
+                    photoImg.classList.remove('hidden');
+                    photoFallback.classList.add('hidden');
+                } else {
+                    photoImg.src = '';
+                    photoImg.classList.add('hidden');
+                    photoFallback.classList.remove('hidden');
+                }
+
+            } else {
+                resultArea.classList.add('hidden');
+                notFoundArea.classList.remove('hidden');
+            }
+        }
+
+        async function fetchApplicantsFromGAS() {
+            if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("ใส่_")) return;
+            
+            try {
+                const response = await fetch(`${GAS_WEB_APP_URL}?action=getApplicants`);
+                const result = await response.json();
+                if (result.success && result.data && result.data.length > 0) {
+                    applicants = result.data.map(app => {
+                        const appYear = app.academicYear || "2569";
+                        return {
+                            ...app,
+                            academicYear: appYear,
+                            examDate: app.level.includes("1") ? `5 เมษายน ${appYear} (09:00 - 12:00 น.)` : `5 เมษายน ${appYear} (13:00 - 16:00 น.)`
+                        };
+                    });
+                    saveApplicantsToStorage();
+                    renderAdminTable();
+                }
+            } catch (e) {
+                console.log("Using local storage data:", e);
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const levelFilter = document.getElementById('adminLevelFilter')?.value || "";
+            const yearFilter = document.getElementById('adminYearFilter')?.value || "";
+            const searchQuery = document.getElementById('adminSearchInput')?.value.trim().toLowerCase() || "";
+
+            let filtered = applicants.filter(app => {
+                const matchLevel = !levelFilter || app.level === levelFilter;
+                const matchYear = !yearFilter || (app.academicYear || activeAcademicYear) === yearFilter;
+                const fullName = `${app.prefix}${app.firstName} ${app.lastName}`.toLowerCase();
+                const matchSearch = !searchQuery || fullName.includes(searchQuery) || app.appNo.toLowerCase().includes(searchQuery) || app.idCard.includes(searchQuery);
+                return matchLevel && matchYear && matchSearch;
+            });
+
+            let countApproved = applicants.filter(a => a.status.includes('สมบูรณ์')).length;
+            let countPending = applicants.filter(a => a.status.includes('รอ')).length;
+            let countFix = applicants.filter(a => a.status.includes('แก้ไข')).length;
+
+            document.getElementById('statTotal').innerText = applicants.length;
+            document.getElementById('statApproved').innerText = countApproved;
+            document.getElementById('statPending').innerText = countPending;
+            document.getElementById('statFix').innerText = countFix;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">ไม่พบข้อมูลผู้สมัครที่ตรงกับเงื่อนไขการค้นหา</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((app, index) => {
+                const actualIndex = applicants.findIndex(a => a.appNo === app.appNo);
+                
+                let statusBadgeClass = "bg-amber-100 text-amber-700";
+                if (app.status.includes('สมบูรณ์')) statusBadgeClass = "bg-emerald-100 text-emerald-700";
+                if (app.status.includes('แก้ไข')) statusBadgeClass = "bg-rose-100 text-rose-700";
+
+                const appYear = app.academicYear || '2569';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-all border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-bold text-edu-700">${app.appNo}</td>
+                    <td class="p-3.5 font-medium text-slate-800">
+                        <div class="flex items-center space-x-2">
+                            <span>${app.prefix}${app.firstName} ${app.lastName}</span>
+                            ${app.docBase64 ? '<span class="text-[10px] bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded" title="มีไฟล์ใบ ปพ.1"><i class="fa-solid fa-paperclip"></i> ปพ.1</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="p-3.5">
+                        <span class="inline-block px-2 py-0.5 rounded bg-edu-50 text-edu-700 font-bold text-[10px] mb-0.5">ปี ${appYear}</span>
+                        <br>${app.level} <span class="text-[10px] text-slate-500">(${app.track})</span>
+                    </td>
+                    <td class="p-3.5">${app.parentPhone}</td>
+                    <td class="p-3.5">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${statusBadgeClass}">
+                            ${app.status}
+                        </span>
+                    </td>
+                    <td class="p-3.5 text-center">
+                        <button onclick="openModal(${actualIndex})" class="px-3 py-1.5 bg-edu-600 hover:bg-edu-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center space-x-1.5 mx-auto">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>ดู/อนุมัติ</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterAdminTable() {
+            renderAdminTable();
+        }
+
+        // OPEN MODAL FOR APPLICANT DETAILS & POR POR 1 PREVIEW
+        function openModal(index) {
+            const app = applicants[index];
+            if (!app) return;
+
+            const modalContent = document.getElementById('modalDetailContent');
+            const saveBtn = document.getElementById('modalSaveBtn');
+            const deleteBtn = document.getElementById('modalDeleteBtn');
+
+            // Format document preview
+            let docPreviewHtml = '';
+            if (app.docBase64) {
+                if (app.docBase64.startsWith('data:image') || app.docBase64.startsWith('data:svg') || app.docBase64.startsWith('data:application/pdf') === false) {
+                    docPreviewHtml = `
+                        <div class="space-y-2">
+                            <div class="relative group rounded-2xl overflow-hidden border border-slate-200 bg-slate-900/5 aspect-[3/4] max-h-72 flex items-center justify-center">
+                                <img id="porpor1PreviewImg" src="${app.docBase64}" alt="รูปใบ ปพ.1" class="max-h-full max-w-full object-contain rounded-xl">
+                                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center space-x-2">
+                                    <button type="button" onclick="openLightbox('${app.docBase64}')" class="bg-white text-slate-800 font-bold px-3 py-1.5 rounded-xl text-xs shadow hover:bg-edu-50">
+                                        <i class="fa-solid fa-expand mr-1"></i> ขยายเต็มจอ
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px] text-slate-500">
+                                <span><i class="fa-solid fa-file-image text-edu-600 mr-1"></i>${app.docName || 'เอกสาร ปพ.1'}</span>
+                                <button type="button" onclick="openLightbox('${app.docBase64}')" class="text-edu-600 font-semibold hover:underline">
+                                    ดูขนาดเต็ม
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    docPreviewHtml = `
+                        <div class="p-4 border border-slate-200 rounded-2xl bg-slate-50 text-center space-y-2">
+                            <i class="fa-solid fa-file-pdf text-3xl text-rose-500"></i>
+                            <p class="font-semibold text-slate-800 text-xs">${app.docName || 'เอกสาร ปพ.1 (.pdf)'}</p>
+                            <a href="${app.docBase64}" target="_blank" download="${app.docName || 'ใบปพ1.pdf'}" class="inline-flex items-center space-x-1 px-3 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-semibold hover:bg-rose-700">
+                                <i class="fa-solid fa-download"></i>
+                                <span>ดาวน์โหลดไฟล์ PDF</span>
+                            </a>
+                        </div>
+                    `;
+                }
+            } else {
+                docPreviewHtml = `
+                    <div class="p-6 border border-dashed border-rose-300 rounded-2xl bg-rose-50 text-center space-y-2">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl text-rose-500"></i>
+                        <p class="font-bold text-rose-700 text-xs">ผู้สมัครยังไม่ได้แนบไฟล์ ปพ.1</p>
+                        <p class="text-[11px] text-rose-600">กรุณาแจ้งให้ผู้สมัครส่งเอกสารเพิ่มเติม</p>
+                    </div>
+                `;
+            }
+
+            modalContent.innerHTML = `
+                <!-- STUDENT INFO HEADER -->
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-edu-100 text-edu-700 rounded-2xl flex items-center justify-center text-xl font-bold overflow-hidden shrink-0">
+                            ${app.photoBase64 ? `<img src="${app.photoBase64}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-user-graduate"></i>'}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">${app.prefix}${app.firstName} ${app.lastName}</h4>
+                            <p class="text-[11px] text-slate-500">เลขประจำตัวประชาชน: <span class="font-mono font-semibold">${app.idCard}</span></p>
+                            <p class="text-[11px] text-edu-700 font-bold">เลขที่ใบสมัคร: ${app.appNo} | ปีการศึกษา: ${app.academicYear || '2569'}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${app.status.includes('สมบูรณ์') ? 'bg-emerald-100 text-emerald-700' : (app.status.includes('รอ') ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700')}">
+                            ${app.status}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- POR POR 1 DOCUMENT INSPECTION SECTION -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-slate-900 text-xs flex items-center">
+                            <i class="fa-solid fa-file-invoice text-edu-600 mr-1.5"></i>
+                            หลักฐานเอกสารใบ ปพ.1 / ใบรับรองผลการเรียนที่แนบมา
+                        </h4>
+                        <span class="text-[10px] text-slate-400">ตรวจสอบความถูกต้องของผลการเรียน</span>
+                    </div>
+                    ${docPreviewHtml}
+                </div>
+
+                <!-- EDITABLE STATUS & EXAM ROOM FORM -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <div class="sm:col-span-2">
+                        <label class="block font-bold text-slate-800 mb-1">ผลการตรวจสอบเอกสาร / สถานะ <span class="text-rose-500">*</span></label>
+                        <select id="modalStatusSelect" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 font-bold text-xs focus:ring-2 focus:ring-edu-500">
+                            <option value="รอตรวจสอบเอกสาร" ${app.status === 'รอตรวจสอบเอกสาร' ? 'selected' : ''}>⏳ รอตรวจสอบเอกสาร</option>
+                            <option value="เอกสารอนุมัติสมบูรณ์" ${app.status.includes('สมบูรณ์') ? 'selected' : ''}>✅ เอกสารอนุมัติสมบูรณ์ (ผ่านการคัดเลือกเอกสาร)</option>
+                            <option value="ต้องแก้ไขเอกสาร" ${app.status.includes('แก้ไข') ? 'selected' : ''}>❌ ต้องแก้ไขเอกสาร (เอกสาร ปพ.1 ไม่ชัดเจน / ไม่ครบถ้วน)</option>
+                        </select>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1">ข้อความแจ้งผู้สมัคร / หมายเหตุเจ้าหน้าที่</label>
+                        <input type="text" id="modalAdminNote" value="${app.adminNote || ''}" placeholder="เช่น เอกสาร ปพ.1 ชัดเจน หรือ โปรดแนบรูปถ่าย ปพ.1 ด้านหลังเพิ่มเติม" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">สถานที่สอบ / ห้องสอบ</label>
+                        <input type="text" id="modalExamRoom" value="${app.examRoom || ''}" placeholder="เช่น อาคาร 3 ชั้น 2 ห้อง 322" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">เลขที่นั่งสอบ</label>
+                        <input type="text" id="modalExamSeat" value="${app.examSeat || ''}" placeholder="เช่น 01" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-edu-500">
+                    </div>
+                </div>
+            `;
+
+            saveBtn.onclick = () => saveModalChanges(index);
+            deleteBtn.onclick = () => deleteApplicant(index);
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function openLightbox(imgSrc) {
+            const lightbox = document.getElementById('docLightboxModal');
+            const lightboxImg = document.getElementById('lightboxImage');
+            const downloadBtn = document.getElementById('lightboxDownloadBtn');
+            lightboxImg.src = imgSrc;
+            downloadBtn.href = imgSrc;
+            lightbox.classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('docLightboxModal').classList.add('hidden');
+        }
+
+        function saveModalChanges(index) {
+            const statusVal = document.getElementById('modalStatusSelect').value;
+            const adminNoteVal = document.getElementById('modalAdminNote').value.trim();
+            const examRoomVal = document.getElementById('modalExamRoom').value.trim();
+            const examSeatVal = document.getElementById('modalExamSeat').value.trim();
+
+            applicants[index].status = statusVal;
+            applicants[index].adminNote = adminNoteVal;
+            applicants[index].examRoom = examRoomVal;
+            applicants[index].examSeat = examSeatVal;
+
+            saveApplicantsToStorage();
+            renderAdminTable();
+            closeModal();
+            showNotification(`บันทึกการเปลี่ยนแปลงผู้สมัคร ${applicants[index].appNo} เรียบร้อยแล้ว`);
+        }
+
+        function deleteApplicant(index) {
+            const app = applicants[index];
+            showConfirm(
+                "ยืนยันการลบใบสมัคร",
+                `คุณต้องการลบใบสมัครของ ${app.prefix}${app.firstName} ${app.lastName} (${app.appNo}) ออกจากระบบใช่หรือไม่?`,
+                () => {
+                    applicants.splice(index, 1);
+                    saveApplicantsToStorage();
+                    renderAdminTable();
+                    closeModal();
+                    showNotification("ลบข้อมูลผู้สมัครเรียบร้อยแล้ว", "info");
+                }
+            );
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTracks();
+            renderPublicNews();
+            refreshYearDisplays();
+        });
+    </script>
+</body>
+</html>
